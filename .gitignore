@@ -1,3 +1,4 @@
 *.db
 *.idea/
 traffic-esp-env/*
+*__pycache__
