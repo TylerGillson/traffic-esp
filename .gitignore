@@ -1,0 +1,3 @@
+*.db
+*.idea/
+traffic-esp-env/*
