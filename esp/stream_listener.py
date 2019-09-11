@@ -49,8 +49,8 @@ class StreamListener(tweepy.StreamListener):
                 created=status.created_at,
                 retweet_count=status.retweet_count,
                 user_bg_color=status.user.profile_background_color,
-                polarity=sentiment.polarity,
-                subjectivity=sentiment.subjectivity,
+                polarity=sentiment.polarity,          # p in [-1.0, 1.0], where -1.0 = negative and 1.0 = positive
+                subjectivity=sentiment.subjectivity,  # s in [0.0, 1.0], where 0.0 = objective and 1.0 = subjective
             ))
         except ProgrammingError as err:
             print(err)
