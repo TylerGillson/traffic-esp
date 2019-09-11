@@ -40,4 +40,4 @@ try:
     stream.filter(track=traffic_keywords)
 except Exception as err:
     logger.error(err)
-
+    raise err
