@@ -34,4 +34,10 @@ db = dataset.connect(CONNECTION_STRING)
 # Start a Tweet listener:
 stream_listener = StreamListener(db, logger)
 stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
-stream.filter(track=traffic_keywords)
+
+# Begin filtering Tweets:
+try:
+    stream.filter(track=traffic_keywords)
+except Exception as err:
+    logger.error(err)
+

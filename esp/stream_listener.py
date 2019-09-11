@@ -13,6 +13,8 @@ class StreamListener(tweepy.StreamListener):
         self.logger = logger
 
     def on_status(self, tweet):
+        self.logger.info(f"Processing tweet id {tweet.id}")
+
         # Check for presence of geo-data first:
         coordinates = tweet.coordinates
         geo = tweet.geo
