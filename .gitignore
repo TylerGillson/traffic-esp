@@ -4,3 +4,5 @@ traffic-esp-env/*
 *__pycache__
 *.csv
 env.txt
+*.gz
+*.tar
