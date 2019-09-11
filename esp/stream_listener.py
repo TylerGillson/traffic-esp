@@ -7,14 +7,15 @@ from sqlalchemy.exc import ProgrammingError
 
 
 class StreamListener(tweepy.StreamListener):
-    def __init__(self, db):
+    def __init__(self, db, logger):
         super(StreamListener, self).__init__()
         self.db = db
+        self.logger = logger
 
-    def on_status(self, status):
+    def on_status(self, tweet):
         # Check for presence of geo-data first:
-        coordinates = status.coordinates
-        geo = status.geo
+        coordinates = tweet.coordinates
+        geo = tweet.geo
         if coordinates is None:  # Ignore tweets w/o geo-data
             return
         if geo is not None:
@@ -29,7 +30,7 @@ class StreamListener(tweepy.StreamListener):
             return
 
         # Perform basic sentiment analysis on Tweet text:
-        text = remove_non_ascii(status.text)
+        text = remove_non_ascii(tweet.text)
         blob = TextBlob(text)
         sentiment = blob.sentiment
 
@@ -37,21 +38,22 @@ class StreamListener(tweepy.StreamListener):
         table = self.db[TABLE_NAME]
         try:
             table.insert(dict(
-                user_description=remove_non_ascii(status.user.description),
-                user_location=status.user.location,
+                user_description=remove_non_ascii(tweet.user.description),
+                user_location=tweet.user.location,
                 coordinates=coordinates,
                 text=text,
                 geo=geo,
-                user_name=remove_non_ascii(status.user.screen_name),
-                user_created=status.user.created_at,
-                user_followers=status.user.followers_count,
-                id_str=status.id_str,
-                created=status.created_at,
-                retweet_count=status.retweet_count,
-                user_bg_color=status.user.profile_background_color,
+                user_name=remove_non_ascii(tweet.user.screen_name),
+                user_created=tweet.user.created_at,
+                user_followers=tweet.user.followers_count,
+                id_str=tweet.id_str,
+                created=tweet.created_at,
+                retweet_count=tweet.retweet_count,
+                user_bg_color=tweet.user.profile_background_color,
                 polarity=sentiment.polarity,          # p in [-1.0, 1.0], where -1.0 = negative and 1.0 = positive
                 subjectivity=sentiment.subjectivity,  # s in [0.0, 1.0], where 0.0 = objective and 1.0 = subjective
             ))
+            self.logger.info(f"Successfully added tweet id {tweet.id} to DB")
         except ProgrammingError as err:
             print(err)
 
