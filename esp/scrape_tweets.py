@@ -5,19 +5,19 @@ Adapted from: https://www.dataquest.io/blog/streaming-data-python/
 
 import tweepy
 import dataset
-from esp import config
-from esp.stream_listener import StreamListener
-from esp.filter_helper import traffic_keywords
+from config import TWITTER_APP_KEY, TWITTER_APP_SECRET, TWITTER_KEY, TWITTER_SECRET, CONNECTION_STRING
+from stream_listener import StreamListener
+from filter_helper import traffic_keywords
 
 # Initialize Twitter authentication objects:
-auth = tweepy.OAuthHandler(config.TWITTER_APP_KEY, config.TWITTER_APP_SECRET)
-auth.set_access_token(config.TWITTER_KEY, config.TWITTER_SECRET)
+auth = tweepy.OAuthHandler(TWITTER_APP_KEY, TWITTER_APP_SECRET)
+auth.set_access_token(TWITTER_KEY, TWITTER_SECRET)
 
 # Get an api object:
 api = tweepy.API(auth)
 
 # Initialize a SQLite DB:
-db = dataset.connect(config.CONNECTION_STRING)
+db = dataset.connect(CONNECTION_STRING)
 
 # Start a Tweet listener:
 stream_listener = StreamListener(db)

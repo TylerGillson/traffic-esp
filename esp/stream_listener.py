@@ -1,7 +1,7 @@
 import json
 import tweepy
-from esp import config
-from esp.filter_helper import bounding_boxes
+from config import TABLE_NAME
+from filter_helper import bounding_boxes
 from textblob import TextBlob
 from sqlalchemy.exc import ProgrammingError
 
@@ -34,7 +34,7 @@ class StreamListener(tweepy.StreamListener):
         sentiment = blob.sentiment
 
         # Update SQLite DB:
-        table = self.db[config.TABLE_NAME]
+        table = self.db[TABLE_NAME]
         try:
             table.insert(dict(
                 user_description=remove_non_ascii(status.user.description),
