@@ -14,6 +14,7 @@ traffic_keywords = [
     'rush hour',
     'congestion',
     'road rage',
+    'road closed',
     'bottleneck'
     'heavy traffic',
     'hazard',
