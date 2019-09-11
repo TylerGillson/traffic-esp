@@ -2,3 +2,4 @@
 *.idea/
 traffic-esp-env/*
 *__pycache__
+*.csv
