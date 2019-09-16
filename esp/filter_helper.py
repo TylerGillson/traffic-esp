@@ -30,6 +30,29 @@ traffic_keywords = [
     # 'street',
 ]
 
+traffic_keywords_uk = [
+    'back up',
+    'bottleneck',
+    'bumper-to-bumper',
+    'busy',
+    'congestion',
+    'congestion charge',
+    'filter',
+    'gridlock',
+    'hold-up',
+    'jam',
+    'nose to tail',
+    'the rush',
+    'snarl',
+    'snarl-up',
+    'speed limit',
+    'ticket',
+    'tied up',
+    'traffic',
+    'traffic calming',
+    'traffic jam'
+]
+
 # Top 15 largest cities in the USA by population, 2019.
 # Cities are ordered from largest to smallest, descending.
 # bboxes generated via: https://boundingbox.klokantech.com/
