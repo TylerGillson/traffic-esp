@@ -8,7 +8,7 @@ import logging
 import dataset
 from config import TWITTER_APP_KEY, TWITTER_APP_SECRET, TWITTER_KEY, TWITTER_SECRET, CONNECTION_STRING
 from stream_listener import StreamListener
-from filter_helper import traffic_keywords
+from filter_helper import all_traffic_keywords
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -31,13 +31,15 @@ logger.info("API created")
 # Initialize a SQLite DB:
 db = dataset.connect(CONNECTION_STRING)
 
-# Start a Tweet listener:
-stream_listener = StreamListener(db, logger)
+# Initiate Tweet listeners:
+stream_listener = StreamListener(db, logger, True)
+
+# Initiate streams:
 stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
 
 # Begin filtering Tweets:
 try:
-    stream.filter(track=traffic_keywords)
+    stream.filter(track=all_traffic_keywords)
 except Exception as err:
     logger.error(err)
     raise err

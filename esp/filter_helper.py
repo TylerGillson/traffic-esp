@@ -1,4 +1,5 @@
-traffic_keywords = [
+# Custom list of traffic keywords:
+custom_traffic_keywords = [
     'accident',
     'construction',
     'crash',
@@ -15,7 +16,7 @@ traffic_keywords = [
     'congestion',
     'road rage',
     'road closed',
-    'bottleneck'
+    'bottleneck',
     'heavy traffic',
     'hazard',
     'pileup',
@@ -30,6 +31,8 @@ traffic_keywords = [
     # 'street',
 ]
 
+# UK traffic movements and traffic jams keywords taken from:
+# https://www.macmillandictionary.com/us/thesaurus-category/american/traffic-movements-and-traffic-jams
 traffic_keywords_uk = [
     'back up',
     'bottleneck',
@@ -53,13 +56,94 @@ traffic_keywords_uk = [
     'traffic jam'
 ]
 
+# Accidents, Road Closure, Hazards & Weather, and Obstacle Vehicles keywords taken from:
+# http://www.dot7.state.pa.us/BPR_PDF_FILES/Documents/Research/Complete%20Projects/Operations/Real_time_Incident_Detection_Using_Social_Media_Data.pdf
+accidents = [
+    'Crash',
+    'Accident',
+    'Collision',
+    'Fatal',
+    'Tow',
+    'Break',
+    'Damage',
+    'Repair'
+]
+
+road_closure = [
+    'Road work',
+    'Closure',
+    'Zone',
+    'Maintenance',
+    'Schedule',
+    'Seal'
+]
+
+hazards_and_weather = [
+    'Rain',
+    'Snow',
+    'Slip',
+    'Wind',
+    'Flood',
+    'Rainy',
+    'Snowy',
+    'Hazard',
+    'Tree',
+    'Block',
+    'Wiper',
+    'Inches',
+    'Wet',
+    'Cold',
+    'Freeze',
+    'Hot',
+    'Visibility',
+    'Fire',
+    'Weather',
+    'Animal',
+    'Deer',
+    'Dead',
+    'Hail',
+    'Melt',
+    'Ice',
+    'Slope',
+    'Chilly',
+    'Slick',
+    'Tire',
+    'Cover',
+    'Friction',
+    'Frozen',
+    'Grip',
+    'Cloudy',
+    'Freeze',
+    'Ponding'
+]
+
+obstacle_vehicles = [
+    'Debris',
+    'Obstacle',
+    'Disabled',
+    'Overweight',
+    'Tall',
+    'Height',
+    'Heavy',
+    'Stuck'
+]
+
+all_traffic_keywords = list(set(custom_traffic_keywords)
+                            .union(set(traffic_keywords_uk))
+                            .union(set(accidents))
+                            .union(set(road_closure))
+                            .union(set(hazards_and_weather))
+                            .union(set(obstacle_vehicles))
+                            )
+
+# Geo-region(s) to filter Tweets by, encoded using the GeoJSON format:
+bounding_boxes = [
+    (-11.69, 49.87, 1.85, 61.26),  # United Kingdom
+]
+
 # Top 15 largest cities in the USA by population, 2019.
 # Cities are ordered from largest to smallest, descending.
 # bboxes generated via: https://boundingbox.klokantech.com/
-bounding_boxes = [
-    (-11.69, 49.87, 1.85, 61.26),      # United Kingdom
-]
-
 """
 (-74, 40, -73, 41),                # New York City, NY
 (-118.67, 33.70, -118.16, 34.34),  # Los Angeles, CA

@@ -7,10 +7,11 @@ from sqlalchemy.exc import ProgrammingError
 
 
 class StreamListener(tweepy.StreamListener):
-    def __init__(self, db, logger):
+    def __init__(self, db, logger, is_geo_specific):
         super(StreamListener, self).__init__()
         self.db = db
         self.logger = logger
+        self.is_geo_specific = is_geo_specific
 
     def on_status(self, tweet):
         self.logger.info(f"Processing tweet id {tweet.id}")
@@ -18,18 +19,21 @@ class StreamListener(tweepy.StreamListener):
         # Check for presence of geo-data first:
         coordinates = tweet.coordinates
         geo = tweet.geo
-        if coordinates is None:  # Ignore tweets w/o geo-data
-            return
-        if geo is not None:
-            geo = json.dumps(geo)
 
-        # Stringify coordinates, but save the point:
-        point = coordinates["coordinates"]
-        coordinates = json.dumps(coordinates)
+        # Conditionally ignore tweets w/o geo-data:
+        if self.is_geo_specific:
+            if coordinates is None:
+                return
+            if geo is not None:
+                geo = json.dumps(geo)
 
-        # Filter by top 15 largest cities in the USA by population:
-        if not in_top_15_city(point, bounding_boxes):
-            return
+            # Stringify coordinates, but save the point:
+            point = coordinates["coordinates"]
+            coordinates = json.dumps(coordinates)
+
+            # Filter tweets by specified geo-region(s):
+            if not in_desired_geo_region(point, bounding_boxes):
+                return
 
         # Perform basic sentiment analysis on Tweet text:
         text = remove_non_ascii(tweet.text)
@@ -79,7 +83,7 @@ def in_bbox(p, bb):
 
 # Given a point and a list of bounding boxes, determine if the
 # point falls within at least one of the bounding boxes:
-def in_top_15_city(p, bbs):
+def in_desired_geo_region(p, bbs):
     # One-liner:
     # return any(list(map(lambda bb: in_bbox(p, bb), bounding_boxes)))
 
