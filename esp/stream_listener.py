@@ -1,17 +1,23 @@
+import guid
 import json
+import boto3
 import tweepy
-from config import TABLE_NAME
+from config import TABLE_NAME, S3_BUCKET_NAME
 from filter_helper import bounding_boxes
 from textblob import TextBlob
 from sqlalchemy.exc import ProgrammingError
 
+s3 = boto3.resource("s3").Bucket(S3_BUCKET_NAME)
+json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
+
 
 class StreamListener(tweepy.StreamListener):
-    def __init__(self, db, logger, is_geo_specific):
+    def __init__(self, db, logger, is_geo_specific, storage_backend):
         super(StreamListener, self).__init__()
         self.db = db
         self.logger = logger
         self.is_geo_specific = is_geo_specific
+        self.storage_backend = storage_backend
 
     def on_status(self, tweet):
         self.logger.info(f"Processing tweet id {tweet.id}")
@@ -40,28 +46,39 @@ class StreamListener(tweepy.StreamListener):
         blob = TextBlob(text)
         sentiment = blob.sentiment
 
-        # Update SQLite DB:
-        table = self.db[TABLE_NAME]
-        try:
-            table.insert(dict(
-                user_description=remove_non_ascii(tweet.user.description),
-                user_location=tweet.user.location,
-                coordinates=coordinates,
-                text=text,
-                geo=geo,
-                user_name=remove_non_ascii(tweet.user.screen_name),
-                user_created=tweet.user.created_at,
-                user_followers=tweet.user.followers_count,
-                id_str=tweet.id_str,
-                created=tweet.created_at,
-                retweet_count=tweet.retweet_count,
-                user_bg_color=tweet.user.profile_background_color,
-                polarity=sentiment.polarity,          # p in [-1.0, 1.0], where -1.0 = negative and 1.0 = positive
-                subjectivity=sentiment.subjectivity,  # s in [0.0, 1.0], where 0.0 = objective and 1.0 = subjective
-            ))
-            self.logger.info(f"Successfully added tweet id {tweet.id} to DB")
-        except ProgrammingError as err:
-            print(err)
+        # Build dictionary for row data from Tweet:
+        row = dict(
+            user_description=remove_non_ascii(tweet.user.description),
+            user_location=tweet.user.location,
+            coordinates=coordinates,
+            text=text,
+            geo=geo,
+            user_name=remove_non_ascii(tweet.user.screen_name),
+            user_created=tweet.user.created_at,
+            user_followers=tweet.user.followers_count,
+            id_str=tweet.id_str,
+            created=tweet.created_at,
+            retweet_count=tweet.retweet_count,
+            user_bg_color=tweet.user.profile_background_color,
+            polarity=sentiment.polarity,  # p in [-1.0, 1.0], where -1.0 = negative and 1.0 = positive
+            subjectivity=sentiment.subjectivity,  # s in [0.0, 1.0], where 0.0 = objective and 1.0 = subjective
+        )
+
+        # Add row to storage backend:
+        if self.storage_backend == 'sqlite':
+            # Update SQLite DB:
+            try:
+                table = self.db[TABLE_NAME]
+                table.insert(row)
+                self.logger.info(f"Successfully added tweet id {tweet.id} to SQLite DB")
+            except ProgrammingError as err:
+                print(err)
+        elif self.storage_backend == 's3':
+            # Upload JSONified row to S3:
+            try:
+                upload_to_s3(row)
+            except Exception as err:
+                print(err)
 
     def on_error(self, status_code):
         if status_code == 420:  # Close the connection if API rate limit is met
@@ -92,3 +109,7 @@ def in_desired_geo_region(p, bbs):
         if in_bbox(p, bb):
             return True
     return False
+
+def upload_to_s3(data):
+    key = guid(data)
+    json.dump_s3(data, key)

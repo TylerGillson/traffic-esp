@@ -3,6 +3,7 @@ Filter a real-time stream of Tweets based on traffic keywords & geo-location.
 Adapted from: https://www.dataquest.io/blog/streaming-data-python/
 """
 
+import sys
 import tweepy
 import logging
 import dataset
@@ -28,11 +29,20 @@ except Exception as err:
     raise err
 logger.info("API created")
 
-# Initialize a SQLite DB:
-db = dataset.connect(CONNECTION_STRING)
+# Initialize storage backend:
+storage_backend = sys.argv[1]
+if storage_backend == 'sqlite':
+    # Initialize a SQLite DB:
+    db = dataset.connect(CONNECTION_STRING)
+elif storage_backend == 's3':
+    pass  # Use an Amazon S3 bucket
+else:
+    logger.error("Invalid storage backend", exc_info=True)
+    raise ValueError("Invalid storage backend")
+logger.info("Storage backend initialized")
 
 # Initiate Tweet listeners:
-stream_listener = StreamListener(db, logger, True)
+stream_listener = StreamListener(db, logger, True, storage_backend)
 
 # Initiate streams:
 stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
