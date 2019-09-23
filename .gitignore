@@ -1,6 +1,6 @@
 *.db
 *.idea/
-traffic-esp-env/*
+env/*
 *__pycache__
 *.csv
 env.txt
