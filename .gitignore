@@ -4,5 +4,6 @@ env/*
 *__pycache__
 *.csv
 env.txt
+aws_config
 *.gz
 *.tar

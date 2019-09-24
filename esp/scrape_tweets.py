@@ -35,7 +35,7 @@ if storage_backend == 'sqlite':
     # Initialize a SQLite DB:
     db = dataset.connect(CONNECTION_STRING)
 elif storage_backend == 's3':
-    pass  # Use an Amazon S3 bucket
+    db = None  # Use an Amazon S3 bucket
 else:
     logger.error("Invalid storage backend", exc_info=True)
     raise ValueError("Invalid storage backend")

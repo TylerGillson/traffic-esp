@@ -7,9 +7,6 @@ from filter_helper import bounding_boxes
 from textblob import TextBlob
 from sqlalchemy.exc import ProgrammingError
 
-s3 = boto3.resource("s3").Bucket(S3_BUCKET_NAME)
-json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
-
 
 class StreamListener(tweepy.StreamListener):
     def __init__(self, db, logger, is_geo_specific, storage_backend):
@@ -18,6 +15,11 @@ class StreamListener(tweepy.StreamListener):
         self.logger = logger
         self.is_geo_specific = is_geo_specific
         self.storage_backend = storage_backend
+
+        # Conditionally connect to S3 and create JSON helper function:
+        if self.storage_backend == 's3':
+            s3 = boto3.resource("s3").Bucket(S3_BUCKET_NAME)
+            json.dump_s3 = lambda obj, f: s3.Object(key=f).put(Body=json.dumps(obj))
 
     def on_status(self, tweet):
         self.logger.info(f"Processing tweet id {tweet.id}")
@@ -76,7 +78,8 @@ class StreamListener(tweepy.StreamListener):
         elif self.storage_backend == 's3':
             # Upload JSONified row to S3:
             try:
-                upload_to_s3(row)
+                key = guid(row)
+                json.dump_s3(row, key)
             except Exception as err:
                 print(err)
 
@@ -109,7 +112,3 @@ def in_desired_geo_region(p, bbs):
         if in_bbox(p, bb):
             return True
     return False
-
-def upload_to_s3(data):
-    key = guid(data)
-    json.dump_s3(data, key)

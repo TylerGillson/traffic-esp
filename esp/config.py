@@ -11,5 +11,5 @@ CONNECTION_STRING = "sqlite:///tweets.db"
 CSV_NAME = "geo-tweets.csv"
 TABLE_NAME = "traffic_tweets"
 
-# Amazon S3 Credentials:
-S3_BUCKET_NAME = "cantyg-traffic-data"
+# Amazon S3 Constants:
+S3_BUCKET_NAME = "sas-bucket-cacon"
