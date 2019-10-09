@@ -68,7 +68,7 @@ class StreamListener(tweepy.StreamListener):
             return False
 
 
-# Returns a string, sanitized of non-ascii chars
+# Return a string, sanitized of non-ascii chars:
 def remove_non_ascii(string):
     if string:
         return string.encode("ascii", errors="ignore").decode()

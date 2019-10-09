@@ -10,3 +10,6 @@ TWITTER_SECRET = os.getenv("TWITTER_SECRET")
 CONNECTION_STRING = "sqlite:///tweets.db"
 CSV_NAME = "geo-tweets.csv"
 TABLE_NAME = "traffic_tweets"
+
+# SMTP Constants:
+VOLPE_GMAIL_PASSWORD = os.getenv("VOLPE_GMAIL_PASSWORD")
