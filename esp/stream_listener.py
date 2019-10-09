@@ -1,9 +1,15 @@
 import json
 import tweepy
-from config import TABLE_NAME
-from filter_helper import bounding_boxes
 from textblob import TextBlob
 from sqlalchemy.exc import ProgrammingError
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+from config import TABLE_NAME
+from email_helper import notify_recipients
+from filter_helper import bounding_boxes, email_keywords
+
+stop_words = set(stopwords.words('english'))
 
 
 class StreamListener(tweepy.StreamListener):
@@ -39,6 +45,12 @@ class StreamListener(tweepy.StreamListener):
         text = remove_non_ascii(tweet.text)
         blob = TextBlob(text)
         sentiment = blob.sentiment
+
+        # Check for notification keywords and optionally send emails:
+        text_tokens = word_tokenize(text)
+        filtered_text = set([w for w in text_tokens if w not in stop_words])
+        if email_keywords.union(filtered_text) is not None:
+            notify_recipients(text)
 
         # Update SQLite DB:
         table = self.db[TABLE_NAME]

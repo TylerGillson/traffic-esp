@@ -161,3 +161,25 @@ bounding_boxes = [
 (-122.75, 36.8, -121.75, 37.8),    # San Francisco, CA
 (-83.21, 39.81, -82.77, 40.12)     # Columbus, OH
 """
+
+# Keywords for email notifications:
+email_keywords = {
+    # Accidents:
+    'accident',
+    'crash',
+    'pileup',
+    'collision',
+    'fender-bender',
+    # Delays:
+    'construction',
+    'congestion',
+    'traffic jam',
+    'road closed',
+    'bottleneck',
+    'heavy traffic',
+    # Natural Disasters:
+    'flood',
+    'tsunami',
+    'earthquake',
+    'tornado'
+}

@@ -6,9 +6,10 @@ Adapted from: https://www.dataquest.io/blog/streaming-data-python/
 import tweepy
 import logging
 import dataset
-from config import TWITTER_APP_KEY, TWITTER_APP_SECRET, TWITTER_KEY, TWITTER_SECRET, CONNECTION_STRING
+
+from config import TWITTER_APP_KEY, TWITTER_APP_SECRET, TWITTER_KEY, TWITTER_SECRET, CONNECTION_STRING, \
+                   NOTIFICATION_TWITTER_ACCOUNT_ID
 from stream_listener import StreamListener
-from filter_helper import all_traffic_keywords
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -32,14 +33,14 @@ logger.info("API created")
 db = dataset.connect(CONNECTION_STRING)
 
 # Initiate Tweet listeners:
-stream_listener = StreamListener(db, logger, True)
+stream_listener = StreamListener(db, logger, False)
 
 # Initiate streams:
 stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
 
 # Begin filtering Tweets:
 try:
-    stream.filter(track=all_traffic_keywords)
+    stream.filter(follow=[NOTIFICATION_TWITTER_ACCOUNT_ID])
 except Exception as err:
     logger.error(err)
     raise err
