@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize
 
 from config import TABLE_NAME
 from email_helper import notify_recipients
-from filter_helper import bounding_boxes, email_keywords
+from filter_helper import bounding_boxes, email_accident_keywords, email_delay_keywords, email_disaster_keywords
 
 stop_words = set(stopwords.words('english'))
 
@@ -49,8 +49,18 @@ class StreamListener(tweepy.StreamListener):
         # Check for notification keywords and optionally send emails:
         text_tokens = word_tokenize(text)
         filtered_text = set([w for w in text_tokens if w not in stop_words])
-        if email_keywords.union(filtered_text) is not None:
-            notify_recipients(text)
+
+        accident_match = email_accident_keywords.intersection(filtered_text)
+        delay_match = email_delay_keywords.intersection(filtered_text)
+        disaster_match = email_disaster_keywords.intersection(filtered_text)
+        match = accident_match or delay_match or disaster_match
+        if match:
+            if accident_match:
+                notify_recipients(text, coordinates, "Traffic Accident")
+            elif delay_match:
+                notify_recipients(text, coordinates, "Traffic Delay")
+            elif disaster_match:
+                notify_recipients(text, coordinates, "Natural Disaster")
 
         # Update SQLite DB:
         table = self.db[TABLE_NAME]

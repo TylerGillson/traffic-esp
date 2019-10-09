@@ -163,21 +163,22 @@ bounding_boxes = [
 """
 
 # Keywords for email notifications:
-email_keywords = {
-    # Accidents:
+email_accident_keywords = {
     'accident',
     'crash',
     'pileup',
     'collision',
-    'fender-bender',
-    # Delays:
+    'fender-bender'
+}
+email_delay_keywords = {
     'construction',
     'congestion',
-    'traffic jam',
-    'road closed',
+    'jam',
+    'closure',
     'bottleneck',
-    'heavy traffic',
-    # Natural Disasters:
+    'traffic'
+}
+email_disaster_keywords = {
     'flood',
     'tsunami',
     'earthquake',
