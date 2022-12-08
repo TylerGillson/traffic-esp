@@ -1,6 +1,6 @@
 alembic==1.1.0
 banal==0.4.2
-certifi==2019.6.16
+certifi==2022.12.7
 chardet==3.0.4
 datafreeze==0.1.0
 dataset==1.1.2
